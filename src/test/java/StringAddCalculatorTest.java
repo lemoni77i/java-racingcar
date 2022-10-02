@@ -1,5 +1,7 @@
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -14,54 +16,45 @@ public class StringAddCalculatorTest {
     }
 
     @Test
-    @DisplayName("단일 구분자 ,로 이루어진 문자열")
+    @DisplayName("단일 구분자 ,로 이루어진 문자열은 문자열의 합을 리턴")
     void sum_comma_separator() {
         assertThat(calculator.sum("1,2")).isEqualTo(3);
         assertThat(calculator.sum("1,2,3")).isEqualTo(6);
     }
 
     @Test
-    @DisplayName("단일 구분자 :로 이루어진 문자열")
+    @DisplayName("단일 구분자 :로 이루어진 문자열은 문자열의 합을 리턴")
     void sum_colon_separator() {
         assertThat(calculator.sum("1:2")).isEqualTo(3);
         assertThat(calculator.sum("1:2:3")).isEqualTo(6);
     }
 
     @Test
-    @DisplayName("기본 구분자 2개가 섞인 문자열")
+    @DisplayName("기본 구분자 2개가 섞인 문자열은 문자열의 합을 리턴")
     void sum_comma_and_colon_separator() {
         assertThat(calculator.sum("1,2:3")).isEqualTo(6);
     }
 
     @Test
-    @DisplayName("커스텀 구분자로 이루어진 문자열")
+    @DisplayName("커스텀 구분자로 이루어진 문자열은 문자열의 합을 리턴")
     void sum_custom_separator() {
         assertThat(calculator.sum("//;\\n1;2;3")).isEqualTo(6);
         assertThat(calculator.sum("//&\\n1&2&3")).isEqualTo(6);
     }
 
-    @Test
-    @DisplayName("커스텀 구분자와 기본 구분자가 섞인 문자열")
-    void sum_custom_and_default_separator() {
+    @DisplayName("커스텀 구분자와 기본 구분자가 섞인 문자열은 예외 발생")
+    @ParameterizedTest(name = "{displayName} [{index}] {argumentsWithNames}")
+    @ValueSource(strings = {"a,b,c", "1;2;a", "-1,0,1","-1,-2,-3"})
+    void sum_custom_and_default_separator(String input) {
         assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> calculator.sum("//;\\n1,2;3"));
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> calculator.sum("//&\\n1:2&3"));
+                .isThrownBy(() -> calculator.sum(input));
     }
 
-    @Test
-    @DisplayName("숫자가 아닌 문자 또는 음수가 포함된 문자열")
-    void sum_invalid_input() {
+    @DisplayName("숫자가 아닌 문자 또는 음수가 포함된 문자열은 예외 발생")
+    @ParameterizedTest(name = "{displayName} [{index}] {argumentsWithNames}")
+    @ValueSource(strings = {"a,b,c", "1;2;a", "-1,0,1","-1,-2,-3"})
+    void sum_invalid_input(String input) {
         assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> calculator.sum("a,b,c"));
-
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> calculator.sum("1;2;a"));
-
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> calculator.sum("-1,0,1"));
-
-        assertThatExceptionOfType(RuntimeException.class)
-                .isThrownBy(() -> calculator.sum("-1,-2,-3"));
+                .isThrownBy(() -> calculator.sum(input));
     }
 }
