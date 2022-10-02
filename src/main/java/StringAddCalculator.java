@@ -9,7 +9,7 @@ public class StringAddCalculator {
     private final String[] defaultDelimiters = new String[]{",", ":"};
     private final Pattern customDelimiterPattern = Pattern.compile("(?://(?<delimiter>.)\\\\n)?(?<sequence>.*)");
 
-    int sum(String input) {
+    public int sum(String input) {
         Optional<String> delimiter = Optional.empty();
         String sequence = "";
 
